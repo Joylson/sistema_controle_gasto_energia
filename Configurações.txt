@@ -1,0 +1,6 @@
+//Configuração do IIS e MySql
+https://docs.microsoft.com/en-us/previous-versions/orphan-topics/ws.11/hh831475(v=ws.11)
+//Baixa Mysql 8.0.14
+https://downloads.mysql.com/archives/installer/
+//Site Chart js
+https://www.chartjs.org/
