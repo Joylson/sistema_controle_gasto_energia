@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+
+.page {
+    margin: 10px 50px;
+    padding: 10px;
+}
+
+body {
+    background-color: #eee !important;
+}
+
+.graph-item {
+    border-radius: 0 !important;
+    margin-bottom: 20px;
+}
+
+    .graph-item .card-body {
+        padding: 0px !important;
+    }
+
+    .graph-item .header-info {
+        padding: 15px;
+        font-family: 'Open Sans', sans-serif;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .graph-item .header-control {
+        padding: 10px 10px;
+        font-family: 'Open Sans', sans-serif;
+        font-weight: bold;
+    }
+
+    .graph-item .list-group-item {
+        border-radius: 0 !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+    }
+
+        .graph-item .list-group-item:last-child {
+            border-bottom: 0 !important;
+        }
+
+.bottom-info {
+    padding: 10px 20px;
+    text-align: right;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.8rem;
+}
+
+.devices-chart-chart {
+    height: 275px;
+}
+
+.data_chart, .data_chart2x {
+    padding: 15px 5px;
+    height: 300px;
+}
+
+.data_chart2x {
+    height: 450px;
+}
+
+.buttons-comando {
+    position: absolute;
+    right:10px;
+    butom:10px;
+    z-index: 9999
+}

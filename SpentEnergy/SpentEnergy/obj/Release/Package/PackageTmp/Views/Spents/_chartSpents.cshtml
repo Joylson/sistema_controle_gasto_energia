@@ -1,0 +1,141 @@
+﻿
+<div class="col-md-12" style="padding:0;">
+    <div class="header-info">Gasto Anual</div>
+    <hr style="margin:0" />
+    <div class="row header-control">
+        <div class="col-md-3">
+            <label for="select-spending-type">Tipo:</label>
+            <select class="form-control" id="select-spending-type" onchange="alterValueSpending()">
+                <option value="M">Mêses</option>
+                <option value="D">Dias</option>
+                <option value="H">Horas</option>
+            </select>
+        </div>
+        <div id="day-spending" class="form-group" style="margin:0 10px; display:none">
+            <label for="day-input-spending">Dia:</label>
+            <input id="day-input-spending" class="form-control" type="number" min="1" max="31" placeholder="Dia" value="1" oninput="alterValueSpending()" />
+        </div>
+        <div id="month-spending" class="form-group" style="margin:0 10px; display: none;">
+            <label for="month-input-spending">Mês:</label>
+            <input id="month-input-spending" class="form-control" type="number" min="1" max="12" placeholder="Mês" value="1" oninput="alterValueSpending()" />
+        </div>
+        <div id="year-spending" style="margin:0 10px;">
+            <label for="year-input-spending">Ano:</label>
+            <input id="year-input-spending" class="form-control" type="number" min="2019" placeholder="Ano" value="2019" oninput="alterValueSpending()" />
+        </div>
+    </div>
+    <div class="dropdown-divider" style="margin-top:0;"></div>
+</div>
+<div class="col-md-12">
+    <div class="card-body data_chart2x">
+        <canvas id="spending-chart" height="105"></canvas>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        let chart_atua_spending = [];
+        let colors_chart_spending = [];
+        let spending_chart_canvas = document.getElementById("spending-chart");
+        let spending_chart = new Chart(spending_chart_canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                fillOpacity: 0.3,
+                labels: months,
+                datasets: []
+            },
+            options: {
+                scales: {
+                    yAxes: [
+                        {
+                            scaleLabel: {
+                                labelString: "R$",
+                                display: true
+                            },
+                            ticks: {
+                                min: 0,
+                                beginAtZero: true
+                            }
+                        }
+                    ]
+                },
+                maintainAspectRatio: false,
+            }
+        });
+
+
+        let time_spent = setInterval(function () {
+            let type = $('#select-spending-type').children("option:selected").val();
+            $.ajax({
+                url: '@Url.Action("ChartSpents", "Spents")',
+                method: 'GET',
+                data: {
+                    type: type,
+                    year: $('#year-input-spending').val(),
+                    month: $('#month-input-spending').val(),
+                    day: $('#day-input-spending').val()
+
+                }
+            }).done(function (data) {
+                let chart_spending = [];
+                colors_chart_spending = random_colors(data.length, 7);
+                for (let i = 0; i < data.length; i++) {
+                    let value = [];
+                    for (let x = 0; x < data[i]['ChartDev'].length; x++) {
+                        value[data[i]['ChartDev'][x]['AxisX'] - 1] = data[i]['ChartDev'][x]['AxisY'];
+                    }
+                    chart_spending.push(
+                        {
+                            label: data[i]['NameDisp'],
+                            data: value,
+                            backgroundColor: colors_chart_spending[i],
+                            borderColor: colors_chart_spending[i],
+                            id: data[i]['IdDev']
+                        }
+                    );
+                }
+                if ((alter_spending)
+                    || ((chackAlter(chart_atua_spending, chart_spending) || spending_chart.data.datasets.length === 0) && atulization_global)) {
+                    spending_chart.data.labels = alterType(type);
+                    spending_chart.data.datasets = chart_spending;
+                    chart_atua_spending = chart_spending;
+                    spending_chart.update();
+                    alter_spending = false;
+                }
+
+            }).fail(function (error) {
+                alert('Erro no carregamento do Grafico de Gasto!!');
+                console.log(error);
+                clearInterval(time_spent);
+            });
+        }, 1000);
+    });
+
+
+    $('#select-spending-type').change(function () {
+        switch ($(this).children('option:selected').val()) {
+            case 'M':
+                $('#year-spending').css('display', 'block');
+                $('#month-spending').css('display', 'none');
+                $('#day-spending').css('display', 'none');
+                break;
+            case 'D':
+                $('#year-spending').css('display', 'block');
+                $('#month-spending').css('display', 'block');
+                $('#day-spending').css('display', 'none');
+                break;
+            case 'H':
+                $('#year-spending').css('display', 'block');
+                $('#month-spending').css('display', 'block');
+                $('#day-spending').css('display', 'block');
+                break;
+        }
+
+    });
+
+    let alter_spending = false
+    let alterValueSpending = function () {
+        alter_spending = true;
+    };
+</script>

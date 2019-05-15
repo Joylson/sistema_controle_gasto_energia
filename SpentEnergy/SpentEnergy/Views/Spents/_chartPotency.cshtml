@@ -1,0 +1,136 @@
+﻿
+<div class="col-md-12" style="padding:0;">
+    <div class="header-info">Potência Média Anual</div>
+    <hr style="margin:0" />
+    <div class="row header-control">
+        <div class="col-md-3">
+            <label for="select-potency-type">Tipo:</label>
+            <select class="form-control" id="select-potency-type" onchange="alterValuePotency()">
+                <option value="M">Mêses</option>
+                <option value="D">Dias</option>
+                <option value="H">Horas</option>
+            </select>
+        </div>
+        <div id="day-potency" class="form-group" style="margin:0 10px; display:none">
+            <label for="day-input-potency">Dia:</label>
+            <input id="day-input-potency" class="form-control" type="number" min="1" max="31" placeholder="Dia" value="1" oninput="alterValuePotency()" />
+        </div>
+        <div id="month-potency" class="form-group" style="margin:0 10px; display: none;">
+            <label for="month-input-potency">Mês:</label>
+            <input id="month-input-potency" class="form-control" type="number" min="1" max="12" placeholder="Mês" value="1" oninput="alterValuePotency()" />
+        </div>
+        <div id="year-potency" style="margin:0 10px;">
+            <label for="year-input-potency">Ano:</label>
+            <input id="year-input-potency" class="form-control" type="number" min="2019" placeholder="Ano" value="2019" oninput="alterValuePotency()" />
+        </div>
+    </div>
+    <hr style="margin:0" />
+</div>
+<div class="col-md-12 ">
+    <div class="card-body data_chart">
+        <canvas id="potency-chart" height="168"></canvas>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        let chart_atua_potency = [];
+        let colors_chart_potency = [];
+        let potency_chart_canvas = document.getElementById("potency-chart");
+        let potency_chart = new Chart(potency_chart_canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: []
+            },
+            options: {
+                scales: {
+                    yAxes: [
+                        {
+                            scaleLabel: {
+                                labelString: "Potência (kW)",
+                                display: true
+                            }
+                        }
+                    ]
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+
+        let time_potency = setInterval(function () {
+            let type = $('#select-potency-type').children("option:selected").val();
+            $.ajax({
+                url: '@Url.Action("ChartPotency", "Spents")',
+                method: 'GET',
+                data: {
+                    type: type,
+                    year: $('#year-input-potency').val(),
+                    month: $('#month-input-potency').val(),
+                    day: $('#day-input-potency').val()
+
+                }
+            }).done(function (data) {
+                let chart_potency = [];
+                colors_chart_potency = random_colors(data.length, 100);
+                for (let i = 0; i < data.length; i++) {
+                    let value = [];
+                    for (let x = 0; x < data[i]['ChartDev'].length; x++) {
+                        value[data[i]['ChartDev'][x]['AxisX'] - 1] = data[i]['ChartDev'][x]['AxisY'];
+                    }
+                    chart_potency.push(
+                        {
+                            label: data[i]['NameDisp'],
+                            data: value,
+                            backgroundColor: 'transparent',
+                            borderColor: colors_chart_potency[i],
+                            id: data[i]['IdDev']
+                        }
+                    );
+                }
+                if ((alter_potency)
+                    || ((chackAlter(chart_atua_potency, chart_potency) || potency_chart.data.datasets.length === 0) && atulization_global)) {
+                    potency_chart.data.labels = alterType(type);
+                    potency_chart.data.datasets = chart_potency;
+                    chart_atua_potency = chart_potency;
+                    potency_chart.update();
+                    alter_potency = false;
+                }
+
+            }).fail(function (error) {
+                alert('Erro no carregamento do Grafico de Potencia!!');
+                console.log(error);
+                clearInterval(time_potency);
+            });
+        }, 1000);
+    });
+
+    $('#select-potency-type').change(function () {
+        switch ($(this).children('option:selected').val()) {
+            case 'M':
+                $('#year-potency').css('display', 'block');
+                $('#month-potency').css('display', 'none');
+                $('#day-potency').css('display', 'none');
+                break;
+            case 'D':
+                $('#year-potency').css('display', 'block');
+                $('#month-potency').css('display', 'block');
+                $('#day-potency').css('display', 'none');
+                break;
+            case 'H':
+                $('#year-potency').css('display', 'block');
+                $('#month-potency').css('display', 'block');
+                $('#day-potency').css('display', 'block');
+                break;
+        }
+
+    });
+
+    let alter_potency = false
+    let alterValuePotency = function () {
+        alter_potency = true;
+    };
+</script>

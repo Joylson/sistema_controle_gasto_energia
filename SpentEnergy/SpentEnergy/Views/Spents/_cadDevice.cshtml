@@ -1,0 +1,52 @@
+﻿
+
+
+<div class="modal fade" id="cadDeviceModal" tabindex="-1" role="dialog" aria-labelledby="cadDeviceLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cadDeviceLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formCadDevice">
+                <div class="modal-body">
+                    <div class="form-group col col-md-6">
+                        <label for="formGroupExampleInput">Número Dispositivo</label>
+                        <input type="text" class="form-control" id="nr_dev" placeholder="Número Dispositivo" required>
+                    </div>
+                    <div class="form-group col col-md-12">
+                        <label for="formGroupExampleInput2">Nome Dispositivo</label>
+                        <input type="text" class="form-control" id="name_dev" placeholder="Nome Dispositivo" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button id="saveDevice" type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $('#formCadDevice').submit(function () {
+        let nrDev = $('#nr_dev').val();
+        let nameDev = $('#name_dev').val();
+        debugger;
+        $.ajax({
+            url: '@Url.Action("saveDevice", "Devices")',
+            method: 'POST',
+            data: {
+                nrDev: nrDev,
+                nameDev: nameDev
+            }
+        }).done(function () {
+            alert("Dispositivo cadastrado com sucesso!!");
+        }).fail(function (erro) {
+            alert("Erro de cadastro!!");
+        });
+    });
+</script>
+
+

@@ -1,0 +1,91 @@
+﻿<div class="card-body">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="header-info">
+                <span>Consumo Geral Mensal</span>
+            </div>
+            <hr style="margin:0"/>
+            <div class="row header-control">
+                <div class="col-md-6">
+                    <label for="select-weekend-type">Tipo:</label>
+                    <select class="form-control" id="select-weekend-type" onchange="alterValueWeekend()">
+                        <option value="P">Potencia</option>
+                        <option value="T">Tensão</option>
+                        <option value="C">Consumo</option>
+                        <option value="G">Gasto</option>
+                    </select>
+                </div>
+                <div id="year-weekend" class="col-md-5" style="margin:0 10px;">
+                    <label for="year-input-weekend">Ano:</label>
+                    <input  id="year-input-weekend" class="form-control" type="number" min="2019" placeholder="Ano" value="2019" oninput="alterValueWeekend()" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr style="margin: 0;" />
+    <div class="row">
+        <div class="col-md-12" >
+            <div class="data_chart">
+                <canvas id="weekend_chart" height="177"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+
+        let chart_atua_weekend = [];
+
+        let weekend_chart_canvas = document.getElementById("weekend_chart");
+        let weekend_chart = new Chart(weekend_chart_canvas.getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: months,
+                datasets: []
+            },
+            options: {
+                maintainAspectRatio: false
+            }
+        });
+
+
+        let time_cunsumption_pie = setInterval(function () {
+            let type = $('#select-weekend-type').children("option:selected").val();
+            $.ajax({
+                url: '@Url.Action("ChartPieInfo","Spents")',
+                method: 'GET',
+                data: {
+                    type: type,
+                    year: $('#year-input-weekend').val()
+                }
+            }).done(function (data) {
+                let atu = false;
+                for (let i = 0; i < data.length; i++) {
+                    data[i] = data[i] === 0 ? undefined : data[i];
+                    if (chart_atua_weekend.length === 0 || chart_atua_weekend[i] !== data[i]) {
+                        atu = true;
+                    }
+                }
+                if ((atu && atulization_global) || alter_weekend) {
+                    weekend_chart.data.datasets = [{
+                        data: data,
+                        backgroundColor: random_colors(data.length, 7),
+                    }];
+                    weekend_chart.update();
+                    chart_atua_weekend = data;
+                    alter_weekend = false
+                }
+            }).fail(function (error) {
+                alert('Erro no carregamento do Grafico de Consumo Geral!!');
+                console.log(error);
+                clearInterval(time_cunsumption_pie);
+            });
+        }, 1000);
+    });
+
+    let alter_weekend = false
+    let alterValueWeekend = function () {
+        alter_weekend = true;
+    };
+</script>

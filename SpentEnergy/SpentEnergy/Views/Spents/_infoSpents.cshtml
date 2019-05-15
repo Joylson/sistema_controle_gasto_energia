@@ -1,0 +1,91 @@
+﻿
+<div class="card-body">
+    <div class="row">
+        <div class="col-md-12 header-info">
+            <span>Informações</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-2 col-sm-1">
+                            <i class="fa fa-bolt"></i>
+                        </div>
+                        <div class="col-md-6 col-sm-7">Tensão</div>
+                        <div class="col-md-4 col-sm-4">
+                            <span id="tension" class="badge badge-primary badge-pill">00.00 (V)</span>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-2 col-sm-1">
+                            <i class="fa fa-car-battery"></i>
+                        </div>
+                        <div class="col-md-6 col-sm-7">Potência</div>
+                        <div class="col-md-4 col-sm-4">
+                            <span id="potency" class="badge badge-primary badge-pill">00.00 (kW)</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-2 col-sm-1">
+                            <i class="fa fa-solar-panel"></i>
+                        </div>
+                        <div class="col-md-6 col-sm-7">Consumo</div>
+                        <div class="col-md-4 col-sm-4">
+                            <span id="calc" class="badge badge-primary badge-pill">00.00 (kWh)</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <i class="fa fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="col-md-6">Valor Médio Gasto</div>
+                        <div class="col-md-4">
+                            <span id="value_med" class="badge badge-primary badge-pill">00.00 (R$)</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="dropdown-divider"></div>
+        </div>
+        <div class="col-md-12">
+            <div class="bottom-info  text-dark">
+                <i class="fa fa-calendar-day mr-2"></i>
+                @DateTime.Today.Date
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let time_Info = setInterval(function () {
+        $.ajax({
+            url: '@Url.Action("InfoSpents", "Spents")',
+            method: 'GET'
+        }).done(function (data) {
+            $('#tension').text(data['Tension'] + ' (V)');
+            $('#potency').text(data['Potency'] + ' (kW)');
+            $('#calc').text(data['Calc'] + ' (kWh)');
+            $('#value_med').text(data['ValueMed'] + ' (R$)');
+        }).fail(function (error) {
+            alert('Erro no carregamento das informações!!');
+            console.log(error);
+            clearInterval(time_Info);
+        })
+    }, 1000);
+
+
+</script>

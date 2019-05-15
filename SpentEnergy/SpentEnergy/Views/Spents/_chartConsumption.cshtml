@@ -1,0 +1,134 @@
+﻿
+<div class="col-md-12" style="padding:0;">
+    <div class="header-info">Consumo Médio Anual</div>
+    <hr style="margin:0" />
+    <div class="row header-control">
+        <div class="col-md-3">
+            <label for="select-devices-type">Tipo:</label>
+            <select class="form-control" id="select-devices-type" onchange="alterValueDevices()">
+                <option value="M">Mêses</option>
+                <option value="D">Dias</option>
+                <option value="H">Horas</option>
+            </select>
+        </div>
+        <div id="day-devices" class="form-group" style="margin:0 10px; display:none">
+            <label for="day-input-devices">Dia:</label>
+            <input id="day-input-devices" class="form-control" type="number" min="1" max="31" placeholder="Dia" value="1" oninput="alterValueDevices()" />
+        </div>
+        <div id="month-devices" class="form-group" style="margin:0 10px; display: none;">
+            <label for="month-input-devices">Mês:</label>
+            <input id="month-input-devices" class="form-control" type="number" min="1" max="12" placeholder="Mês" value="1" oninput="alterValueDevices()" />
+        </div>
+        <div id="year-devices" style="margin:0 10px;">
+            <label for="year-input-devices">Ano:</label>
+            <input id="year-input-devices" class="form-control" type="number" min="2019" placeholder="Ano" value="2019" oninput="alterValueDevices()" />
+        </div>
+    </div>
+    <hr style="margin:0" />
+</div>
+<div class="col-md-12">
+    <div class="card-body data_chart">
+        <canvas id="devices-chart" class="devices-chart-chart" height="168"></canvas>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        let chart_atua_devices = [];
+        let colors_chart_devices = [];
+        let devices_chart_canvas = document.getElementById("devices-chart");
+        let devices_chart = new Chart(devices_chart_canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                fillOpacity: 0.3,
+                labels: months,
+                datasets: []
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Consumo (kWh)'
+                        }
+                    }]
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+
+        let time_consumpition = setInterval(function () {
+             let type = $('#select-devices-type').children("option:selected").val();
+            $.ajax({
+                url: '@Url.Action("ChartConsumption", "Spents")',
+                method: 'GET',
+                data: {
+                    type: type,
+                    year: $('#year-input-devices').val(),
+                    month: $('#month-input-devices').val(),
+                    day: $('#day-input-devices').val()
+
+                }
+            }).done(function (data) {
+                let chart_devices = [];
+                colors_chart_devices = random_colors(data.length, 100);
+                for (let i = 0; i < data.length; i++) {
+                    let value = [];
+                    for (let x = 0; x < data[i]['ChartDev'].length; x++) {
+                        value[data[i]['ChartDev'][x]['AxisX'] - 1] = data[i]['ChartDev'][x]['AxisY'];
+                    }
+                    chart_devices.push(
+                        {
+                            label: data[i]['NameDisp'],
+                            data: value,
+                            backgroundColor: 'transparent',
+                            borderColor: colors_chart_devices[i],
+                            id: data[i]['IdDev']
+                        }
+                    );
+                }
+                if ((alter_devices)
+                    || ((chackAlter(chart_atua_devices, chart_devices) || devices_chart.data.datasets.length === 0) && atulization_global)) {
+                    devices_chart.data.labels = alterType(type);
+                    devices_chart.data.datasets = chart_devices;
+                    chart_atua_devices = chart_devices;
+                    devices_chart.update();
+                    alter_devices = false;
+                }
+
+            }).fail(function (error) {
+                alert('Erro no carregamento do Grafico de Consumo!!');
+                console.log(error);
+                clearInterval(time_consumpition);
+            });
+        }, 1000);
+    });
+
+    $('#select-devices-type').change(function () {
+        switch ($(this).children('option:selected').val()) {
+            case 'M':
+                $('#year-devices').css('display', 'block');
+                $('#month-devices').css('display', 'none');
+                $('#day-devices').css('display', 'none');
+                break;
+            case 'D':
+                $('#year-devices').css('display', 'block');
+                $('#month-devices').css('display', 'block');
+                $('#day-devices').css('display', 'none');
+                break;
+            case 'H':
+                $('#year-devices').css('display', 'block');
+                $('#month-devices').css('display', 'block');
+                $('#day-devices').css('display', 'block');
+                break;
+        }
+
+    });
+
+    let alter_devices = false
+    let alterValueDevices = function () {
+        alter_devices = true;
+    };
+</script>
