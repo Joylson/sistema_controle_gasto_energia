@@ -65,6 +65,7 @@ let createSeq = function (range, desc) {
 };
 
 
+//verifica alterações no banco de dados
 let chackAlter = function (chart1, chart2) {
     let atua = chart1 === [] || chart2 === [] ? true : false;
     atua = chart1.length !== chart2.length;
@@ -83,6 +84,7 @@ let chackAlter = function (chart1, chart2) {
     return atua;
 };
 
+//cores aleatoria 
 random_color = function (min_alpha) {
     min_alpha = min_alpha | 20;
     r = Math.floor(Math.random() * (255 - 1) + 1);
