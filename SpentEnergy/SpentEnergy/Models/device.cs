@@ -6,6 +6,10 @@ namespace SpentEnergy.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
+
+    /// <summary>
+    /// Entidade representativa dos disposivos cadastrados
+    /// </summary>
     [Table("spentenergy.device")]
     public partial class Device
     {

@@ -1,9 +1,10 @@
-﻿
+﻿<!--grafico de consumo-->
 <div class="col-md-12" style="padding:0;">
     <div class="header-info">Consumo Médio Anual</div>
     <hr style="margin:0" />
     <div class="row header-control">
         <div class="col-md-3">
+            <!--Tipo de filltro-->
             <label for="select-devices-type">Tipo:</label>
             <select class="form-control" id="select-devices-type" onchange="alterValueDevices()">
                 <option value="M">Mêses</option>
@@ -12,14 +13,17 @@
             </select>
         </div>
         <div id="day-devices" class="form-group" style="margin:0 10px; display:none">
+            <!--Valor dia-->
             <label for="day-input-devices">Dia:</label>
             <input id="day-input-devices" class="form-control" type="number" min="1" max="31" placeholder="Dia" value="1" oninput="alterValueDevices()" />
         </div>
         <div id="month-devices" class="form-group" style="margin:0 10px; display: none;">
+            <!--valor mes-->
             <label for="month-input-devices">Mês:</label>
             <input id="month-input-devices" class="form-control" type="number" min="1" max="12" placeholder="Mês" value="1" oninput="alterValueDevices()" />
         </div>
         <div id="year-devices" style="margin:0 10px;">
+            <!--valor ano-->
             <label for="year-input-devices">Ano:</label>
             <input id="year-input-devices" class="form-control" type="number" min="2019" placeholder="Ano" value="2019" oninput="alterValueDevices()" />
         </div>
@@ -28,13 +32,16 @@
 </div>
 <div class="col-md-12">
     <div class="card-body data_chart">
+        <!--onde vai ficar o grafico especificação chartjs-->
         <canvas id="devices-chart" class="devices-chart-chart" height="168"></canvas>
     </div>
 </div>
 
 <script>
 
+    //evento ao iniciar
     $(document).ready(function () {
+        //criando variaveis inicias vazias
         let chart_atua_devices = [];
         let colors_chart_devices = [];
         let devices_chart_canvas = document.getElementById("devices-chart");
@@ -58,22 +65,29 @@
             }
         });
 
-
+        //iniciando time de consumo
         let time_consumpition = setInterval(function () {
-             let type = $('#select-devices-type').children("option:selected").val();
+            //capiturando o tipo selecionado
+            let type = $('#select-devices-type').children("option:selected").val();
+
+            //requisição de ChartConsumption na controller spent
             $.ajax({
                 url: '@Url.Action("ChartConsumption", "Spents")',
                 method: 'GET',
                 data: {
-                    type: type,
-                    year: $('#year-input-devices').val(),
-                    month: $('#month-input-devices').val(),
-                    day: $('#day-input-devices').val()
+                    type: type,//passndo variaveis 
+                    year: $('#year-input-devices').val(),//capturando valor de ano
+                    month: $('#month-input-devices').val(),//capturando valor de mes
+                    day: $('#day-input-devices').val()//capturando valor de dia
 
                 }
             }).done(function (data) {
                 let chart_devices = [];
+
+                //gera cores aleatorias para cada dispositivo
                 colors_chart_devices = random_colors(data.length, 100);
+
+                //percorreos dados e trata para ser exibido no grafico
                 for (let i = 0; i < data.length; i++) {
                     let value = [];
                     for (let x = 0; x < data[i]['ChartDev'].length; x++) {
@@ -89,8 +103,12 @@
                         }
                     );
                 }
-                if ((alter_devices)
-                    || ((chackAlter(chart_atua_devices, chart_devices) || devices_chart.data.datasets.length === 0) && atulization_global)) {
+                //verificações para atuliza o grafico
+                if ((alter_devices) //verificar se foi alterado algo na tela
+                    || ((chackAlter(chart_atua_devices, chart_devices)//verifica se foi alterado algo no banco
+                    || devices_chart.data.datasets.length === 0)//verifica se os dados estão vazios
+                    && atulization_global)//verifica sé botão de alterações globais ta ativo
+                ) {
                     devices_chart.data.labels = alterType(type);
                     devices_chart.data.datasets = chart_devices;
                     chart_atua_devices = chart_devices;
@@ -98,7 +116,8 @@
                     alter_devices = false;
                 }
 
-            }).fail(function (error) {
+                }).fail(function (error) {
+                //caso de erro de consulta 
                 alert('Erro no carregamento do Grafico de Consumo!!');
                 console.log(error);
                 clearInterval(time_consumpition);
@@ -106,6 +125,7 @@
         }, 1000);
     });
 
+    //configurar visualização de acordo com tipo
     $('#select-devices-type').change(function () {
         switch ($(this).children('option:selected').val()) {
             case 'M':

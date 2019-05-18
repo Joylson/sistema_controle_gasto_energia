@@ -1,6 +1,6 @@
 ﻿
 
-
+<!--Cadastro de dispositivo-->
 <div class="modal fade" id="cadDeviceModal" tabindex="-1" role="dialog" aria-labelledby="cadDeviceLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -30,10 +30,12 @@
     </div>
 </div>
 <script>
+
+    //evento de click
     $('#formCadDevice').submit(function () {
         let nrDev = $('#nr_dev').val();
         let nameDev = $('#name_dev').val();
-        debugger;
+        //requisição ajax do evento saveDevice controller device 
         $.ajax({
             url: '@Url.Action("saveDevice", "Devices")',
             method: 'POST',
@@ -42,8 +44,10 @@
                 nameDev: nameDev
             }
         }).done(function () {
+            //caso de certo alerta 
             alert("Dispositivo cadastrado com sucesso!!");
-        }).fail(function (erro) {
+            }).fail(function (erro) {
+            //caso de erro alerta
             alert("Erro de cadastro!!");
         });
     });

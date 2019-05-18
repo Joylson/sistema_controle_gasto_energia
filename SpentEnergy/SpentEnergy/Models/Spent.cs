@@ -5,7 +5,9 @@ namespace SpentEnergy.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
-
+    /// <summary>
+    /// Entidade representativa do gasto de energia dos dispositivo
+    /// </summary>
     [Table("spentenergy.spent")]
     public partial class Spent
     {
